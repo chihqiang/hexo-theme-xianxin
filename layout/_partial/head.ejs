@@ -27,7 +27,7 @@
 
     <title><%= title %></title>
     <%
-    let keywords = theme.keywords, tmp = [];
+    let keywords = conf("keywords"), tmp = [];
     if (page.tags && page.tags.length) {
         page.tags.forEach(function (tag) {
             tmp.push(tag.name);
