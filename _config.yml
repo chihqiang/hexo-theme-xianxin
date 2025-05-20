@@ -24,10 +24,6 @@ separator: xianxin
 404_text: "心姐抛出了个 404"
 
 
-# 统计 baidu,google,bing,github
-search: google
-
-
 # 平台站点统计
 #https://tongji.baidu.com/
 #baidu_analytics: ''

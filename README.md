@@ -23,5 +23,8 @@ npm install hexo-generator-sitemap --save
 
 //https://github.com/rozbo/hexo-neat
 npm install hexo-neat --save
+
+//https://github.com/wzpan/hexo-generator-search
+npm install hexo-generator-search --save
 ~~~
 

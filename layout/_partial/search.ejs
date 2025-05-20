@@ -1,21 +1,103 @@
-<!--搜索-->
+<style>
+  #search-results {
+    position: absolute;
+    top: 50px;
+    left: 0;
+    width: 100%;
+    max-height: 400px;
+    overflow-y: auto;
+    z-index: 999;
+    padding: 10px;
+  }
 
-<%
-let logo = conf("logo")
-let logo_text = conf("logo_text")
-let menu = conf("menu")
+  .search-result-item {
+    background: #fff;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    transition: 0.2s ease;
+    border: 1px solid #eee;
+  }
 
-let {url, keyword} = search_url_keyword(conf("search"))
-%>
+  .search-result-item:hover {
+    background-color: #f8f8f8;
+    transform: translateY(-2px);
+  }
 
+  .search-result-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #0078f2;
+    text-decoration: none;
+    display: block;
+    line-height: 1.5;
+  }
 
-<form class="layui-form blog-seach pull-left" method="get" action="<%= url %>">
-    <div class="layui-form-item blog-sewrap">
-        <div class="layui-input-block blog-sebox">
-            <i class="layui-icon layui-icon-search"></i>
-            <input type="text" name="<%= keyword %>" lay-verify="title" autocomplete="off"
-                   class="layui-input">
-            <input type="hidden" name="source" value="<%= conf("url") %>">
-        </div>
+  .search-no-result {
+    padding: 16px;
+    color: #999;
+    font-style: italic;
+  }
+</style>
+
+<div class="layui-form blog-seach pull-left" style="position: relative;">
+  <div class="layui-form-item blog-sewrap">
+    <div class="layui-input-block blog-sebox">
+      <i class="layui-icon layui-icon-search"></i>
+      <input
+        type="text"
+        id="search-input"
+        placeholder="请输入关键词"
+        autocomplete="off"
+        class="layui-input"
+      >
+      <div id="search-results"></div>
     </div>
-</form>
+  </div>
+</div>
+
+<script>
+  (() => {
+    const input = document.getElementById('search-input');
+    const resultBox = document.getElementById('search-results');
+    let searchData = [];
+
+    fetch('/search.json')
+      .then(res => res.json())
+      .then(data => searchData = data)
+      .catch(err => console.error('加载 search.json 失败', err));
+
+    input.addEventListener('input', () => {
+      const keyword = input.value.trim().toLowerCase();
+      resultBox.innerHTML = '';
+
+      if (!keyword) return;
+
+      const results = searchData.filter(post =>
+        post.title.toLowerCase().includes(keyword)
+      );
+
+      if (results.length === 0) {
+        resultBox.innerHTML = '<div class="search-no-result">没有找到相关文章</div>';
+        return;
+      }
+
+      results.slice(0, 10).forEach(post => {
+        const item = document.createElement('div');
+        item.className = 'search-result-item';
+        item.innerHTML = `
+          <a href="${post.url}" class="search-result-title">${post.title}</a>
+        `;
+        resultBox.appendChild(item);
+      });
+    });
+
+    // 点击页面其他地方关闭结果
+    document.addEventListener('click', (e) => {
+      if (!document.querySelector('.blog-seach').contains(e.target)) {
+        resultBox.innerHTML = '';
+      }
+    });
+  })();
+</script>
